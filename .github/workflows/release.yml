@@ -34,9 +34,9 @@ jobs:
           TRAINCREW_INPUT_DLL_URL: https://acty-soft.com/tatehama/TrainCrewInput20251116.zip
         run: |
           mkdir -p ../dll
-          curl -fsSL "$TRAINCREW_INPUT_DLL_URL" -o traincrewinput.zip
-          unzip -o traincrewinput.zip -d traincrewinput
-          cp "$(find traincrewinput -name TrainCrewInput.dll | head -n1)" ../dll/TrainCrewInput.dll
+          zip="${RUNNER_TEMP:-/tmp}/traincrewinput.zip"
+          curl -fsSL "$TRAINCREW_INPUT_DLL_URL" -o "$zip"
+          unzip -j -o "$zip" "*/DLL/TrainCrewInput.dll" -d ../dll
 
       # This repo builds standalone, so the Rudolf schema package can't come from the sibling source
       # tree. Download the latest Rudolf release nupkg and expose it as a local NuGet feed so the
@@ -47,12 +47,6 @@ jobs:
         run: |
           mkdir -p local-feed
           repo=haruyukitanuki/Rudolf
-          # `gh release download` with no tag resolves to /releases/latest, which excludes drafts
-          # AND prereleases — so it silently fails when only prereleases exist. Resolve the tag
-          # explicitly with a clear preference: the stable "Latest" release first, else the newest
-          # prerelease (the 0.x -alpha.N situation), else fail. `gh release list` returns releases
-          # newest-first, so .[0] of a filtered set is the newest match. `gh`'s built-in --jq keeps
-          # this self-contained (no separate jq install required).
 
           # 1. Prefer the release GitHub marks as "Latest" (a promoted, stable release).
           tag="$(gh release list --repo "$repo" --exclude-drafts --json tagName,isLatest \
