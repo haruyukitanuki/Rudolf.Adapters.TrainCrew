@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>Tanuden.Rudolf.Adapters.TrainCrew</PackageId>
+        <Description>TRAIN CREW adapter for the Rudolf wire schema.</Description>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+
+        <Company>Tanukigawa Railway (狸河電鉄)</Company>
+        <Product>Rudolf</Product>
+
+        <Version>1.0.0</Version>
+
+        <Copyright>© 2026 Tanukigawa Railway (Haruyuki Tanukiji)</Copyright>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugType>embedded</DebugType>
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+        <DebugSymbols>true</DebugSymbols>
+        <DocumentationFile>bin\Release\Tanuden.Rudolf.Adapters.TrainCrew.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DocumentationFile>bin\Debug\Tanuden.Rudolf.Adapters.TrainCrew.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Rudolf\dotnet\src\Tanuden.Rudolf\Tanuden.Rudolf.csproj"/>
+        <PackageReference Include="Websocket.Client" Version="5.5.0"/>
+        <!-- Proprietary, host-provided SDK DLL (gitignored, not redistributed). Private=false: the
+             TRAIN CREW host already has it loaded in-process, so we don't copy it to output. -->
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="TrainCrewInput">
+            <HintPath>..\dll\TrainCrewInput.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+</Project>
