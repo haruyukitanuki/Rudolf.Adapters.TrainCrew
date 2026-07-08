@@ -46,7 +46,33 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p local-feed
-          gh release download --repo haruyukitanuki/Rudolf --pattern "*.nupkg" --dir local-feed
+          repo=haruyukitanuki/Rudolf
+          # `gh release download` with no tag resolves to /releases/latest, which excludes drafts
+          # AND prereleases — so it silently fails when only prereleases exist. Resolve the tag
+          # explicitly with a clear preference: the stable "Latest" release first, else the newest
+          # prerelease (the 0.x -alpha.N situation), else fail. `gh release list` returns releases
+          # newest-first, so .[0] of a filtered set is the newest match. `gh`'s built-in --jq keeps
+          # this self-contained (no separate jq install required).
+
+          # 1. Prefer the release GitHub marks as "Latest" (a promoted, stable release).
+          tag="$(gh release list --repo "$repo" --exclude-drafts --json tagName,isLatest \
+            --jq 'map(select(.isLatest)) | .[0].tagName // empty')"
+          if [ -n "$tag" ]; then
+            echo "Using latest Rudolf release: $tag"
+          else
+            # 2. No latest release — use the newest prerelease.
+            tag="$(gh release list --repo "$repo" --exclude-drafts --json tagName,isPrerelease \
+              --jq 'map(select(.isPrerelease)) | .[0].tagName // empty')"
+            [ -n "$tag" ] && echo "No latest Rudolf release; using newest prerelease: $tag"
+          fi
+
+          # 3. Neither a latest nor a prerelease release exists — fail loudly.
+          if [ -z "$tag" ]; then
+            echo "::error::No latest or prerelease Rudolf release found on $repo" >&2
+            exit 1
+          fi
+
+          gh release download "$tag" --repo "$repo" --pattern "*.nupkg" --dir local-feed
           dotnet nuget add source "$(pwd)/local-feed" --name rudolf-local
 
       - name: Restore

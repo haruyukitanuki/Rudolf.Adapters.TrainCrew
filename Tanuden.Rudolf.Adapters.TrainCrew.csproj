@@ -35,10 +35,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- Exactly one of these is active per UseRudolfPackage above. "*" floats to the newest Rudolf
-             release; .github/workflows/release.yml seeds a local NuGet feed with that release nupkg. -->
+        <!-- Exactly one of these is active per UseRudolfPackage above. "*-*" floats to the newest
+             Rudolf release *including prereleases* ("*" alone is stable-only and rejects Rudolf's
+             0.x -alpha.N packages with NU1103); .github/workflows/release.yml seeds a local NuGet
+             feed with that release nupkg. -->
         <ProjectReference Condition="'$(UseRudolfPackage)' != 'true'" Include="..\Rudolf\dotnet\src\Tanuden.Rudolf\Tanuden.Rudolf.csproj"/>
-        <PackageReference Condition="'$(UseRudolfPackage)' == 'true'" Include="Tanuden.Rudolf" Version="*"/>
+        <PackageReference Condition="'$(UseRudolfPackage)' == 'true'" Include="Tanuden.Rudolf" Version="*-*"/>
         <PackageReference Include="Websocket.Client" Version="5.5.0"/>
         <!-- Proprietary, host-provided SDK DLL (gitignored, not redistributed). Private=false: the
              TRAIN CREW host already has it loaded in-process, so we don't copy it to output. -->
