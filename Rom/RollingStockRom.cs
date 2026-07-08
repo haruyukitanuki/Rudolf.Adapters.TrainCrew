@@ -148,7 +148,7 @@ internal static class RollingStockRom
                 PowerNotches = 5,
                 BrakeNotches = 8,
                 EbNotch = -9,
-                HoldingBrakeNotches = 0,
+                HoldingBrakeNotches = 3,
                 CpStartPressure = 640,
                 CpStopPressure = 780
             }),
@@ -162,7 +162,7 @@ internal static class RollingStockRom
                 PowerNotches = 5,
                 BrakeNotches = 8,
                 EbNotch = -9,
-                HoldingBrakeNotches = 0,
+                HoldingBrakeNotches = 3,
                 CpStartPressure = 640,
                 CpStopPressure = 780
             }),
