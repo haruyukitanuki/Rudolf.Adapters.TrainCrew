@@ -23,6 +23,10 @@ This is a consumer adapter. The wire format itself (the spec and the type packag
 Start there for the schema, the `SimulatorProfile`/`OutputDataFrame`/`InputCommand` document
 shapes, and the list of other available adapters.
 
+## Installation
+
+Reference the [.nupkg](https://github.com/haruyukitanuki/Rudolf.Adapters.TrainCrew/releases) from Releases.
+
 ## Usage
 
 Construct the adapter, `Start()` it once, then poll `GetProfile()`/`GetCurrentFrame()` each frame and

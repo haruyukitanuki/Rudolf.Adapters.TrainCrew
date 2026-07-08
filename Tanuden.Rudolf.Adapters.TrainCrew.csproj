@@ -26,8 +26,19 @@
         <DocumentationFile>bin\Debug\Tanuden.Rudolf.Adapters.TrainCrew.xml</DocumentationFile>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- Where the Rudolf schema package comes from. Local dev builds against the sibling Rudolf
+             source tree (ProjectReference); CI has no sibling checkout, so it builds against the
+             published nupkg (PackageReference). Auto-detects GitHub Actions via its GITHUB_ACTIONS
+             env var; force it either way anywhere with -p:UseRudolfPackage=true|false. -->
+        <UseRudolfPackage Condition="'$(UseRudolfPackage)' == '' and '$(GITHUB_ACTIONS)' == 'true'">true</UseRudolfPackage>
+    </PropertyGroup>
+
     <ItemGroup>
-        <ProjectReference Include="..\Rudolf\dotnet\src\Tanuden.Rudolf\Tanuden.Rudolf.csproj"/>
+        <!-- Exactly one of these is active per UseRudolfPackage above. "*" floats to the newest Rudolf
+             release; .github/workflows/release.yml seeds a local NuGet feed with that release nupkg. -->
+        <ProjectReference Condition="'$(UseRudolfPackage)' != 'true'" Include="..\Rudolf\dotnet\src\Tanuden.Rudolf\Tanuden.Rudolf.csproj"/>
+        <PackageReference Condition="'$(UseRudolfPackage)' == 'true'" Include="Tanuden.Rudolf" Version="*"/>
         <PackageReference Include="Websocket.Client" Version="5.5.0"/>
         <!-- Proprietary, host-provided SDK DLL (gitignored, not redistributed). Private=false: the
              TRAIN CREW host already has it loaded in-process, so we don't copy it to output. -->
@@ -35,7 +46,7 @@
 
     <ItemGroup>
         <Reference Include="TrainCrewInput">
-            <HintPath>..\dll\TrainCrewInput.dll</HintPath>
+            <HintPath>../dll/TrainCrewInput.dll</HintPath>
         </Reference>
     </ItemGroup>
 
