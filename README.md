@@ -1,5 +1,7 @@
 # Rudolf.Adapters.TrainCrew
 
+**English** | [日本語](./README.ja.md)
+
 A [Rudolf](https://github.com/haruyukitanuki/rudolf) adapter for **TRAIN CREW**.
 
 It reads live train state out of TRAIN CREW and hands it back as Rudolf documents
