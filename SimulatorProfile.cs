@@ -111,7 +111,7 @@ public sealed partial class TrainCrewRudolfAdapter
                 PantographDirection = c.HasPantograph && pantographLayout != null && i < pantographLayout.Count
                     ? pantographLayout[i]
                     : null,
-                Length = -1
+                Length = 20
             });
         }
 
