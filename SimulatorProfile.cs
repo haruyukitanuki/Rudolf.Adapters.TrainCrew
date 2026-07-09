@@ -75,14 +75,11 @@ public sealed partial class TrainCrewRudolfAdapter
         var models = orderedCars.Select(state => state.CarModel).Distinct().ToList();
         var name = models.Select(model => model != null ? model + '形' : string.Empty).Aggregate((x, y) => $"{x}+{y}");
         var model = models.Select(model => model ?? string.Empty).Aggregate((x, y) => $"{x}+{y}");
-
-        // ROM data is keyed per model. A TRAIN CREW consist is single-model, so resolve one key only when
-        // it's unambiguous; a mixed/unknown consist yields null and emits null rather than misapplying one
-        // model's layout to another car. Capabilities/pantograph are then looked up once for the consist.
+        
         var nonNullModels = models.Where(m => m != null).ToList();
         var consistModel = nonNullModels.Count == 1 ? nonNullModels[0] : null;
-        var pantographStyle = RomLookup.PantographStyle(consistModel);
-        var pantographLayout = RomLookup.PantographLayout(consistModel, orderedCars.Count);
+
+        var pantographs = DeterminePantographs(orderedCars, cabDirections);
 
         var vehicle = new VehicleInfo
         {
@@ -103,19 +100,59 @@ public sealed partial class TrainCrewRudolfAdapter
                 HasDriverCab = c.HasDriverCab,
                 HasConductorCab = c.HasConductorCab,
                 HasMotor = c.HasMotor,
-                HasPantograph = c.HasPantograph,
+                HasPantograph = pantographs[i].Has,
                 CabDirection = cabDirections[i],
-                // Pantograph type/orientation come from the static rolling-stock ROM, gated on the SDK's
-                // HasPantograph (the authority for presence); null when absent from ROM or no pantograph.
-                PantographType = c.HasPantograph ? pantographStyle : null,
-                PantographDirection = c.HasPantograph && pantographLayout != null && i < pantographLayout.Count
-                    ? pantographLayout[i]
-                    : null,
+                PantographType = pantographs[i].Type,
+                PantographDirection = pantographs[i].Direction,
                 Length = 20
             });
         }
 
         return vehicle;
+    }
+
+    /// <summary>
+    ///     Determine Pantograph Directions based on consist and ROM
+    /// </summary>
+    private static (PantographDirection? Direction, PantographType? Type, bool Has)[] DeterminePantographs(
+        IReadOnlyList<CarState> cars, Direction?[] cabDirections)
+    {
+        var n = cars.Count;
+        var result = new (PantographDirection? Direction, PantographType? Type, bool Has)[n];
+
+        var sectionStart = 0;
+        for (var i = 0; i < n; i++)
+        {
+            var boundaryAfter = cars[i].HasDriverCab && cabDirections[i] == Direction.Right
+                && i != 0 && i != n - 1;
+            if (!boundaryAfter) continue;
+
+            AssignPantographSection(cars, result, sectionStart, i);
+            sectionStart = i + 1;
+        }
+
+        if (sectionStart < n) AssignPantographSection(cars, result, sectionStart, n - 1);
+
+        return result;
+    }
+
+    private static void AssignPantographSection(
+        IReadOnlyList<CarState> cars,
+        (PantographDirection? Direction, PantographType? Type, bool Has)[] result,
+        int start, int endInclusive)
+    {
+        var model = cars[start].CarModel;
+        var length = endInclusive - start + 1;
+        var layout = RomLookup.PantographLayout(model, length);
+        var style = RomLookup.PantographStyle(model);
+
+        for (var i = start; i <= endInclusive; i++)
+        {
+            var local = i - start;
+            var dir = layout != null && local < layout.Count ? layout[local] : null;
+            var has = dir != null;
+            result[i] = (dir, has ? style : null, has);
+        }
     }
 
     /// <summary>
