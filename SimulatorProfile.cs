@@ -118,7 +118,9 @@ public sealed partial class TrainCrewRudolfAdapter
         return vehicle;
     }
 
-    /// <summary>3-pass cab-direction heuristic ported from OpenTetsu's TrainCrewAdapter.</summary>
+    /// <summary>
+    ///     Cab-direction heuristic ported from OpenTetsu's TrainCrewAdapter.
+    /// </summary>
     private static Direction?[] DetermineCabDirections(IReadOnlyList<CarState> cars)
     {
         var n = cars.Count;
@@ -127,8 +129,8 @@ public sealed partial class TrainCrewRudolfAdapter
         for (var i = 0; i < n; i++)
         {
             if (!cars[i].HasDriverCab) continue;
-
-            dir[i] = i == n - 1 ? Direction.Right : Direction.Left;
+            
+            dir[i] = i == 0 ? Direction.Left : i == n - 1 ? Direction.Right : Direction.Left;
         }
 
         for (var i = 0; i < n; i++)
