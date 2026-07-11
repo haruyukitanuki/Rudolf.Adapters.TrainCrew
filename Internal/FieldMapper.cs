@@ -24,14 +24,14 @@ internal static class FieldMapper
     {
         switch ((phase ?? string.Empty).Trim().ToUpperInvariant())
         {
-            case "R": return (int)SignalPhase.R; // 1
-            case "YY": return (int)SignalPhase.YY; // 2
-            case "Y": return (int)SignalPhase.Y; // 3
-            case "YG": return (int)SignalPhase.YG; // 4
-            case "YGF": return (int)SignalPhase.YGF; // 5
-            case "G": return (int)SignalPhase.G; // 6
-            case "GG": return (int)SignalPhase.GG; // 7
-            default: return (int)SignalPhase.Disabled; // 0
+            case "R": return (int)SignalPhase.R;        // 1
+            case "YY": return (int)SignalPhase.YY;      // 2
+            case "Y": return (int)SignalPhase.Y;        // 3
+            case "YG": return (int)SignalPhase.YG;      // 4
+            case "YGF": return (int)SignalPhase.YGF;    // 5
+            case "G": return (int)SignalPhase.G;        // 6
+            case "GG": return (int)SignalPhase.GG;      // 7
+            default: return (int)SignalPhase.Disabled;  // 0
         }
     }
 
