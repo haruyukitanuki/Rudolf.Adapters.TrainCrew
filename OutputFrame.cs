@@ -208,7 +208,7 @@ public sealed partial class TrainCrewRudolfAdapter
                 foreach (var b in s.beacons)
                     signal.Transponders.Add(new Transponder
                     {
-                        Category = null,
+                        Category = TransponderCategory.Signal,
                         Code = null,
                         SpeedLimit = b.speed,
                         Distance = b.distance
