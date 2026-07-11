@@ -20,7 +20,12 @@ public sealed partial class TrainCrewRudolfAdapter
         switch (command)
         {
             case SetNotchCommand c:
-                TrainCrewInput.SetNotch(c.Value);
+                if (c.Value <= SetNotchCommand.EB)
+                    TrainCrewInput.SetButton(InputAction.NotchEB, true); // EB snap, train-agnostic.
+                else if (c.Relative)
+                    StepNotch(c.Value);
+                else
+                    TrainCrewInput.SetNotch(c.Value);
                 break;
             case SetPowerNotchCommand c:
                 TrainCrewInput.SetPowerNotch(c.Value);
@@ -35,7 +40,7 @@ public sealed partial class TrainCrewRudolfAdapter
                 TrainCrewInput.SetReverser((int)c.Value);
                 break;
             case SetButtonCommand c:
-                TrainCrewInput.SetButton(FieldMapper.MapInputAction(c.Action), c.State);
+                TrainCrewInput.SetButton(FieldMapper.MapAction(c.Action), c.State);
                 break;
             case SetWiperCommand c:
                 TrainCrewInput.SetWiper(FieldMapper.MapWiper(c.State));
@@ -48,6 +53,17 @@ public sealed partial class TrainCrewRudolfAdapter
                 break;
             default:
                 throw new NotSupportedException($"Command {command.GetType().Name} is not supported.");
+        }
+    }
+    
+    /// <summary>For setting the notch relatively</summary>
+    private static void StepNotch(int steps)
+    {
+        var action = steps > 0 ? InputAction.NotchUp : InputAction.NotchDw;
+        for (var i = 0; i < Math.Abs(steps); i++)
+        {
+            TrainCrewInput.SetButton(action, true);
+            TrainCrewInput.SetButton(action, false);
         }
     }
 

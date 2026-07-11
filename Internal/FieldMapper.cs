@@ -7,7 +7,6 @@ using Tanuden.Rudolf.Sections;
 using TrainCrew;
 using DriveMode = Tanuden.Rudolf.Enums.DriveMode;
 using GameScreen = Tanuden.Rudolf.Enums.GameScreen;
-using RInputAction = Tanuden.Rudolf.Input.InputAction;
 using StopType = Tanuden.Rudolf.Enums.StopType;
 
 namespace Tanuden.Rudolf.Adapters.TrainCrew.Internal;
@@ -189,38 +188,48 @@ internal static class FieldMapper
         return runNumberInt.ToString(CultureInfo.InvariantCulture);
     }
 
-    internal static InputAction MapInputAction(RInputAction action)
+    internal static InputAction MapAction(string action)
     {
         return action switch
         {
-            RInputAction.NotchUp => InputAction.NotchUp,
-            RInputAction.NotchDown => InputAction.NotchDw,
-            RInputAction.NotchN => InputAction.NotchN,
-            RInputAction.NotchTowardN => InputAction.NotchToN,
-            RInputAction.NotchEB => InputAction.NotchEB,
-            RInputAction.NotchB1 => InputAction.NotchB1,
-            RInputAction.EBReset => InputAction.EBReset,
-            RInputAction.GradientStart => InputAction.GradientStart,
-            RInputAction.HornAir => InputAction.HornAir,
-            RInputAction.HornElectric => InputAction.HornEle,
-            RInputAction.Buzzer => InputAction.Buzzer,
-            RInputAction.DoorOpen => InputAction.DoorOpn,
-            RInputAction.DoorClose => InputAction.DoorCls,
-            RInputAction.DoorReopen => InputAction.ReOpenSW,
-            RInputAction.DoorKey => InputAction.DoorKey,
-            RInputAction.BoardingPrompt => InputAction.JoukouSokusin,
-            RInputAction.Broadcast => InputAction.Housou,
-            RInputAction.LightLow => InputAction.LightLow,
-            RInputAction.ConductorViewBack => InputAction.ConductorViewB,
-            RInputAction.ViewChange => InputAction.ViewChange,
-            RInputAction.PauseMenu => InputAction.PauseMenu,
-            RInputAction.ViewDiagram => InputAction.ViewDiagram,
-            RInputAction.ViewUserInterface => InputAction.ViewUserInterface,
-            RInputAction.ViewHome => InputAction.ViewHome,
-            RInputAction.DriverViewLeft => InputAction.DriverViewL,
-            RInputAction.DriverViewRight => InputAction.DriverViewR,
-            RInputAction.DriverViewCenter => InputAction.DriverViewC,
-            _ => throw new NotSupportedException($"InputAction {action} is not supported by the TRAIN CREW SDK.")
+            // VehicleAction (physical cab/train controls).
+            "EBReset" => InputAction.EBReset,
+            "GradientStart" => InputAction.GradientStart,
+            "SafetyBrake" => InputAction.SafetyBrakeSw,
+            "SnowBrake" => InputAction.SnowBrake,
+            "HornAir" => InputAction.HornAir,
+            "HornElectric" => InputAction.HornEle,
+            "Buzzer" => InputAction.Buzzer,
+            "DoorOpenLeft" => InputAction.DoorOpnLeft,
+            "DoorCloseLeft" => InputAction.DoorClsLeft,
+            "DoorOpenRight" => InputAction.DoorOpnRight,
+            "DoorCloseRight" => InputAction.DoorClsRight,
+            "DoorReopen" => InputAction.ReOpenSW,
+            "DoorKey" => InputAction.DoorKey,
+            "PartialDoor" => InputAction.door34sw,
+            "DoorCut" => InputAction.doorCutSw,
+            "BoardingPrompt" => InputAction.JoukouSokusin,
+            "InCarBroadcast" => InputAction.Housou,
+            "HeadLightLow" => InputAction.LightLow,
+            "HeadLight" => InputAction.HeadLightSw,
+            "CabinLight" => InputAction.roomLightSw,
+            "CrewRoomLight" => InputAction.CrewRoomLightSw,
+            "InstrumentLight" => InputAction.MeterLightSw,
+            // GameAction (camera/view/UI/sim-meta).
+            "ExteriorView" => InputAction.ViewChange,
+            "DriverAlternateView" => InputAction.DriverViewB,
+            "ConductorAlternateView" => InputAction.ConductorViewB,
+            "LeftWindowView" => InputAction.LeftWindow,
+            "RightWindowView" => InputAction.RightWindow,
+            "TogglePauseMenu" => InputAction.PauseMenu,
+            "ToggleDiagramDisplay" => InputAction.ViewDiagram,
+            "ToggleGUI" => InputAction.ViewUserInterface,
+            "ToggleCrewDoor" => InputAction.CrewDoor,
+            "ToggleCrewWindow" => InputAction.CrewWindow,
+            // Custom/non-spec passthrough: accept any SDK-native member name verbatim.
+            _ => Enum.TryParse<InputAction>(action, out var native)
+                ? native
+                : throw new NotSupportedException($"Action '{action}' is not supported.")
         };
     }
 
