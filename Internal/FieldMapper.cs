@@ -44,7 +44,10 @@ internal static class FieldMapper
 
         if (trimmed == "無表示") return null;
 
-        return double.TryParse(trimmed, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : null;
+        if (!double.TryParse(trimmed, NumberStyles.Float, CultureInfo.InvariantCulture, out var v)) return null;
+        
+        // ATS Speed 3000 is output by traincrew if it is in free mode
+        return v >= 3000.0 ? -1.0 : v;
     }
 
     internal static AtsRichState? MapAtsRichState(int? bitmask)
