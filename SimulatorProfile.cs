@@ -31,6 +31,8 @@ public sealed partial class TrainCrewRudolfAdapter
 
         var scenarioId = ResolveScenarioId(trainState.diaName);
         if (_cachedProfile != null) return _cachedProfile;
+        
+        if (trainState.CarStates is null || trainState.CarStates.Count == 0) return null;
 
         _cachedProfile = BuildProfile(trainState, gameState, scenarioId);
         return _cachedProfile;
@@ -64,7 +66,7 @@ public sealed partial class TrainCrewRudolfAdapter
             },
             Vehicle = BuildVehicle(orderedCars, direction),
             Capabilities = BuildCapabilities(),
-            Vocabularies = new Vocabularies()
+            Vocabularies = new Vocabularies { SignalPhaseSpeed = BuildSignalPhaseSpeed() }
         };
     }
 
