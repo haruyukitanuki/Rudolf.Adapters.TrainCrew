@@ -208,4 +208,12 @@ public sealed partial class TrainCrewRudolfAdapter
             ["input.command.SetDeadman"] = E(true)
         };
     }
+
+    private static Dictionary<string, double?> BuildSignalPhaseSpeed()
+    {
+        var dict = new Dictionary<string, double?>(StringComparer.Ordinal);
+        foreach (var (phase, kmh) in SignalPhaseSpeeds.PhaseSpeedKmh)
+            dict[phase.ToString(CultureInfo.InvariantCulture)] = kmh;
+        return dict;
+    }
 }
