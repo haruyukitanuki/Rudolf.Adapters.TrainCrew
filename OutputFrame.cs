@@ -35,7 +35,7 @@ public sealed partial class TrainCrewRudolfAdapter
 
         if (trainState.stationList.Count == 0) TrainCrewInput.RequestStaData();
 
-        var scenarioId = ResolveScenarioId(trainState.diaName);
+        var scenarioId = ResolveScenarioId(trainState.diaName, trainState.CarStates.Count);
 
         return BuildFrame(
             trainState, signals, switches, gameState, scenarioId,

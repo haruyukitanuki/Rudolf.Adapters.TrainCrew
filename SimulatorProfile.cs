@@ -29,10 +29,10 @@ public sealed partial class TrainCrewRudolfAdapter
 
         var gameState = TrainCrewInput.gameState;
 
-        var scenarioId = ResolveScenarioId(trainState.diaName);
-        if (_cachedProfile != null) return _cachedProfile;
-        
         if (trainState.CarStates is null || trainState.CarStates.Count == 0) return null;
+
+        var scenarioId = ResolveScenarioId(trainState.diaName, trainState.CarStates.Count);
+        if (_cachedProfile != null) return _cachedProfile;
 
         _cachedProfile = BuildProfile(trainState, gameState, scenarioId);
         return _cachedProfile;

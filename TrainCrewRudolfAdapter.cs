@@ -29,6 +29,7 @@ public sealed partial class TrainCrewRudolfAdapter : IRudolfAdapter
 
     // Last-seen diagram name + game screen, tracked across frames for scenario-id rotation and IsReady.
     private string? _lastDiaName;
+    private int? _lastNumCars;
     private volatile GameScreen _lastScreen = GameScreen.NotRunning;
 
     // Scenario identity — owned here so callers don't need to manage it.
@@ -71,12 +72,14 @@ public sealed partial class TrainCrewRudolfAdapter : IRudolfAdapter
     }
 
     // Rotates _scenarioId when the effective diaName changes and invalidates the profile cache.
-    private string ResolveScenarioId(string? rawDiaName)
+    // Also regenerate when the number of cars is changed to support (de)coupling scenarios.
+    private string ResolveScenarioId(string? rawDiaName, int? numCars)
     {
-        if (rawDiaName != _lastDiaName)
+        if (rawDiaName != _lastDiaName || numCars != _lastNumCars)
         {
             _scenarioId = Guid.NewGuid().ToString();
             _lastDiaName = rawDiaName;
+            _lastNumCars = numCars;
             _cachedProfile = null;
         }
 
