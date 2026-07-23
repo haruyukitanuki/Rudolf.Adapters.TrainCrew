@@ -1,3 +1,4 @@
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -27,8 +28,9 @@ public sealed partial class TrainCrewRudolfAdapter : IRudolfAdapter
 
     private SimulatorProfile? _cachedProfile;
 
-    // Last-seen diagram name + game screen, tracked across frames for scenario-id rotation and IsReady.
+    // Last-seen diagram name + train info + game screen, tracked across frames for scenario-id rotation and IsReady.
     private string? _lastDiaName;
+    private List<SimpleTrainCarInfo> _lastTrainInfo = new List<SimpleTrainCarInfo>();
     private volatile GameScreen _lastScreen = GameScreen.NotRunning;
 
     // Scenario identity — owned here so callers don't need to manage it.
@@ -70,13 +72,17 @@ public sealed partial class TrainCrewRudolfAdapter : IRudolfAdapter
         _wsSnapshot = null;
     }
 
-    // Rotates _scenarioId when the effective diaName changes and invalidates the profile cache.
-    private string ResolveScenarioId(string? rawDiaName)
+    // Rotates _scenarioId when the effective diaName or consist changes and invalidates the profile cache.
+    private string ResolveScenarioId(string? rawDiaName, List<CarState> carStates)
     {
-        if (rawDiaName != _lastDiaName)
+        // Build new train info from trainState
+        List<SimpleTrainCarInfo> trainInfo = GetSimpleTrainInfo(carStates);
+
+        if (rawDiaName != _lastDiaName || !TrainInfosEqual(trainInfo, _lastTrainInfo))
         {
             _scenarioId = Guid.NewGuid().ToString();
             _lastDiaName = rawDiaName;
+            _lastTrainInfo = trainInfo;
             _cachedProfile = null;
         }
 
