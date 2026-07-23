@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using TrainCrew;
 
 namespace Tanuden.Rudolf.Adapters.TrainCrew
@@ -76,7 +75,7 @@ namespace Tanuden.Rudolf.Adapters.TrainCrew
             }
         }
 
-        private List<SimpleTrainCarInfo> GetSimpleTrainInfo(List<CarState> carStates)
+        private static List<SimpleTrainCarInfo> GetSimpleTrainInfo(List<CarState> carStates)
         {
             List<SimpleTrainCarInfo> carInfos = new List<SimpleTrainCarInfo>();
 
@@ -93,7 +92,7 @@ namespace Tanuden.Rudolf.Adapters.TrainCrew
             return carInfos;
         }
 
-        private bool TrainInfosEqual(List<SimpleTrainCarInfo> a, List<SimpleTrainCarInfo> b)
+        private static bool TrainInfosEqual(List<SimpleTrainCarInfo> a, List<SimpleTrainCarInfo> b)
         {
             if (a == null || b == null || a.Count != b.Count)
             {
@@ -111,16 +110,6 @@ namespace Tanuden.Rudolf.Adapters.TrainCrew
 
                 return true;
             }
-        }
-
-        private static int? GetCarCount(TrainState trainState)
-        {
-            int? numCars = null;
-            if (trainState.CarStates != null)
-            {
-                numCars = trainState.CarStates.Count;
-            }
-            return numCars;
         }
     }
 }

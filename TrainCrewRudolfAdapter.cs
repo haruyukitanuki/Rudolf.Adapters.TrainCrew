@@ -82,7 +82,7 @@ public sealed partial class TrainCrewRudolfAdapter : IRudolfAdapter
         {
             _scenarioId = Guid.NewGuid().ToString();
             _lastDiaName = rawDiaName;
-            _lastTrainInfo = new List<SimpleTrainCarInfo>(trainInfo); // copy contents to new list
+            _lastTrainInfo = trainInfo;
             _cachedProfile = null;
         }
 
